@@ -1,0 +1,129 @@
+"""This module provides a connection to the MySQL server."""
+
+import MySQLdb
+import _mysql
+from errors import *
+
+class db_connection (object):
+  __flag_connected = False
+  __connection = None
+  
+  host = "localhost"
+  user_name = ""
+  password = ""
+  db_name = ""
+
+  
+  def __check_ready_to_connect(self):
+    if len(self.user_name) == 0:
+      raise error_x("User name not defined.")
+    if len(self.db_name) == 0:
+      raise error_x("Database name not defined.")
+
+  def __connect(self):
+    self.__check_ready_to_connect()
+    self.__connection = MySQLdb.connect(host = self.host, user = self.user_name, passwd = self.password, db = self.db_name)
+  
+  def __assure_connected(self):
+    if not self.__flag_connected:
+      self.__connect()
+      self.__flag_connected = True
+  
+  
+  def get_connection(self):
+    self.__assure_connected()
+    return self.__connection
+  
+  connection = property(get_connection)
+  
+  def get_new_cursor(self):
+    self.__assure_connected()
+    return self.__connection.cursor()
+
+  def execute(self, sql_statement, *args):
+    """Executes sql_statement and returns a cursor object."""
+    
+    self.__assure_connected()
+    cursor = self.get_new_cursor()
+    cursor.execute(sql_statement, *args)
+    return cursor
+  
+  
+  def setup_from_ini(self):
+    pass
+  
+  def disconnect(self):
+    if self.__flag_connected:
+      self.__flag_connected = False
+      self.__connection.close()
+
+  
+  def connect(self):
+    if self.__flag_connected:
+      raise error_x("Already connected to database.")
+    self.__assure_connected()
+
+  def query(self, sql, *args):
+    self.execute(self, sql, *args)
+     
+  def query_scalar(self, sql, *args):
+    self.__assure_connected()
+    cursor = self.execute(sql, *args)
+    t = cursor.fetchone()
+    cursor.close()
+    if t == None:
+      return t
+    else:
+      return t[0]
+    
+  def query_row(self, sql, *args):
+    self.__assure_connected()
+    cursor = self.execute(sql, *args)
+    t = cursor.fetchone()
+    cursor.close()
+    return t
+
+  def query_table(self, sql, *args):
+    self.__assure_connected()
+    cursor = self.execute(sql, *args)
+    t = cursor.fetchall()
+    cursor.close()
+    return t
+  
+  def query_cursor(self, sql, *args):
+    """Returns a cursor object. Does not fetch anything."""
+    self.__assure_connected()
+    cursor = self.execute(sql, *args)
+    return cursor
+  
+         
+  def insert_id(self):
+    """This is cheating because insert_id() does not exist in DBAPI."""
+    
+    return self.__connection.insert_id()
+
+
+
+def get_field_names(cursor):
+  """Extracts field names from cursor.description. Returns a list"""
+  
+  return [name for (name, d1, d2, d3, d4, d5, d6) in cursor.description]
+  
+def get_sql(cursor):
+  """Gets the SQL statement from cursor._executed"""
+  return cursor._executed
+  
+def get_field_count(cursor):
+  return len(cursor.description)
+
+
+def setup():
+  global con
+  
+  import database as d
+  con.user_name = d.user_name
+  con.password = d.password
+  con.db_name = d.db_name
+  con.host = d.host
+    
+con = db_connection()

@@ -1,0 +1,7 @@
+user_name = "cells_user"
+password = "meogrrk"
+db_name = "cells"
+#host = "localhost"
+host = "148.88.213.88"
+#host = "148.88.232.152"
+#host = "148.88.213.232"

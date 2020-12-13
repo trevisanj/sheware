@@ -1,0 +1,46 @@
+from table import table
+from db_con import con
+from output import output
+from errors import *
+
+class table_setup (table):
+  __flag_checked = False
+  def __init__(self):
+    self.table_name = "setup"
+    
+  def __assure_table_ok(self):
+    """Checks if 'setup' table has the correct number of rows. If it has more 1, throws an exception; if it has 0 rows, inserts a default setup row."""
+    if not self.__flag_checked:
+      no = con.query_scalar("select count(*) from %s" %self.table_name)
+      if no > 1:
+        raise error_x("Table %s should have only 1 row but has %s!" % (self.table_name, no))
+      elif no < 1:
+        # default setup
+        con.execute("insert into %s (path_image) values (%%s)" % self.table_name, ("."))
+      
+      self.__flag_checked = True
+
+  def get_value(self, field_name):
+    self.__assure_table_ok()
+    
+    cursor = con.execute("select %s from %s" % (field_name, self.table_name))
+    t = cursor.fetchone()
+    cursor.close()
+    return t == None and t or t[0]
+    
+  
+  def get_values(self, fields):
+    self.__assure_table_ok()
+    
+    cursor = con.execute("select %s from %s" % (",".join(fields), self.table_name))
+    t = cursor.fetchone()
+    cursor.close()
+    return t
+
+  def update(self, values, id_ = None):
+    """id_ is not used, it is in the parameters list just for compatibility"""
+    assert isinstance(values, dict)
+    con.execute(("update %s set "+(" = %%s, ".join(values.keys()))+" = %%s") % (self.table_name), tuple(values.values()))
+
+   
+t_setup = table_setup()

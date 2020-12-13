@@ -1,0 +1,52 @@
+from table import table
+from db_con import con
+from output import output
+from sql_mounter import select_mounter
+from table_judge import t_judge
+from errors import *
+
+class table_spectrum_judge (table):
+  def __init__(self):
+    self.table_name = "spectrum_judge"
+    
+  def delete_1spectrum(self, idexperiment):
+    con.execute("delete from %s where idexperiment = %s" % (self.table_name, idexperiment))
+    
+  def delete_1judge(self, idjudge, idexperiment):
+    con.execute("delete from %s where idjudge = %s and idexperiment = %s" % (self.table_name, idjudge, idexperiment))
+  
+  def insert_1colony(self, params, idjudge, idcolony, idexperiment):
+    from table_spectrum import t_spectrum
+    
+    ids = t_spectrum.get_cursor_1colony(("id",), idcolony).fetchall()
+    if len(ids) > 0:
+      ids = apply(zip, ids)[0]
+      
+      for idspectrum in ids:
+        con.execute("insert into %s (params, idspectrum, idjudge, idexperiment) values (%%s, %%s, %%s, %%s)" % (self.table_name,), (params, idspectrum, idjudge, idexperiment))
+
+  def get_values_1spectrum(self, field_names, idspectrum):
+    o = select_mounter(tables=("spectrum_judge",),
+                       fields=field_names,
+                       wheres=("idspectrum = %s" % (idspectrum,)),
+                       orderbys="id")
+    return con.execute(o.mount_select())                       
+    
+    
+  def get_cursor_scores_1experiment(self, idexperiment):
+    return self.get_cursor_1experiment(
+      ("spectrum_judge.idspectrum", "params"), idexperiment)
+    
+  def get_cursor_1experiment(self, field_names, idexperiment):
+    o = select_mounter(tables=("spectrum",),
+                       fields=field_names,
+                       joins=(("colony", "colony.id = spectrum.idcolony"), 
+                              ("slide", "slide.id = colony.idslide"), 
+                              ("tray", "tray.id = slide.idtray")
+                             ),
+                       wheres=("tray.idexperiment = %s" % (idexperiment,)),
+                       orderbys="spectrum.id")
+    return con.execute(o.mount_select())                       
+
+    
+t_spectrum_judge = table_spectrum_judge()

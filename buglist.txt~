@@ -1,0 +1,1 @@
+Experiments not showing in the experiment registry grid unless they have spectra (I know this is bad, but I will have to do multiple selects to grab the number of spectra for each experiment or study more the possibilities of getting what I want in a single select)

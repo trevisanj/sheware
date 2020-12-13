@@ -1,0 +1,220 @@
+#Boa:Dialog:DialogEditSpectrum
+
+import wx
+from errors import *
+from table_spectrum import t_spectrum
+from table_series import t_series
+from table_spectrum_judge import t_spectrum_judge
+from table_judge import t_judge
+import wx.lib.floatcanvas.FloatCanvas as fc
+import wx.lib.floatcanvas.NavCanvas as nc
+from chart import *
+from series import *
+from judge import *
+from session import session
+
+def create(parent):
+    return DialogEditSpectrum(parent)
+
+[wxID_DIALOGEDITSPECTRUM, wxID_DIALOGEDITSPECTRUMBUTTONACTIVATE, wxID_DIALOGEDITSPECTRUMBUTTONDEACTIVATE, wxID_DIALOGEDITSPECTRUMBUTTONRELOAD, 
+ wxID_DIALOGEDITSPECTRUMBUTTONSAVE, wxID_DIALOGEDITSPECTRUMNOTEBOOK1, wxID_DIALOGEDITSPECTRUMPANELACTIONS, wxID_DIALOGEDITSPECTRUMPANELCHART, 
+ wxID_DIALOGEDITSPECTRUMPANELCOMMENTS, wxID_DIALOGEDITSPECTRUMSTATICTEXTCOMMENTS, wxID_DIALOGEDITSPECTRUMSTATICTEXTDESCRIPTION, 
+ wxID_DIALOGEDITSPECTRUMTEXTCTRLCOMMENTS, wxID_DIALOGEDITSPECTRUMTEXTCTRLREPORT, 
+] = [wx.NewId() for _init_ctrls in range(13)]
+
+wxID_NC = wx.NewId()
+
+
+class DialogEditSpectrum(wx.Dialog):
+  def _init_coll_boxSizerMain_Items(self, parent):
+    # generated method, don't edit
+
+    parent.AddWindow(self.staticTextDescription, 0, border=5, flag=wx.ALL | wx.GROW)
+    parent.AddWindow(self.panelActions, 0, border=5, flag=wx.ALL | wx.GROW)
+    parent.AddWindow(self.notebook1, 1, border=5, flag=wx.GROW | wx.ALL)
+
+  def _init_coll_boxSizerComments_Items(self, parent):
+    # generated method, don't edit
+
+    parent.AddWindow(self.staticTextComments, 0, border=5, flag=wx.ALL)
+    parent.AddWindow(self.textCtrlComments, 1, border=5, flag=wx.ALL | wx.GROW)
+    parent.AddWindow(self.buttonSave, 0, border=0, flag=0)
+
+  def _init_coll_boxSizerActions_Items(self, parent):
+    # generated method, don't edit
+
+    parent.AddWindow(self.buttonReload, 0, border=5, flag=wx.ALL)
+    parent.AddWindow(self.buttonActivate, 0, border=5, flag=wx.ALL)
+    parent.AddWindow(self.buttonDeactivate, 0, border=5, flag=wx.ALL)
+    parent.AddWindow(self.panelComments, 1, border=0, flag=0)
+
+  def _init_coll_notebook1_Pages(self, parent):
+    # generated method, don't edit
+
+    parent.AddPage(imageId=-1, page=self.panelChart, select=True, text='&Figure')
+    parent.AddPage(imageId=-1, page=self.textCtrlReport, select=False, text='&Report')
+
+  def _init_sizers(self):
+    # generated method, don't edit
+    self.boxSizerMain = wx.BoxSizer(orient=wx.VERTICAL)
+
+    self.boxSizerActions = wx.BoxSizer(orient=wx.HORIZONTAL)
+
+    self.boxSizerChart = wx.BoxSizer(orient=wx.VERTICAL)
+
+    self.boxSizerComments = wx.BoxSizer(orient=wx.HORIZONTAL)
+
+    self._init_coll_boxSizerMain_Items(self.boxSizerMain)
+    self._init_coll_boxSizerActions_Items(self.boxSizerActions)
+    self._init_coll_boxSizerComments_Items(self.boxSizerComments)
+
+    self.SetSizer(self.boxSizerMain)
+    self.panelActions.SetSizer(self.boxSizerActions)
+    self.panelChart.SetSizer(self.boxSizerChart)
+    self.panelComments.SetSizer(self.boxSizerComments)
+
+  def _init_ctrls(self, prnt):
+    # generated method, don't edit
+    wx.Dialog.__init__(self, id=wxID_DIALOGEDITSPECTRUM, name='DialogEditSpectrum', parent=prnt, pos=wx.Point(389, 242), size=wx.Size(695, 554),
+      style=wx.DEFAULT_FRAME_STYLE, title='Spectrum')
+    self.SetClientSize(wx.Size(679, 518))
+    self.Bind(wx.EVT_ACTIVATE, self.OnDialogEditSpectrumActivate)
+
+    self.panelActions = wx.Panel(id=wxID_DIALOGEDITSPECTRUMPANELACTIONS, name='panelActions', parent=self, pos=wx.Point(5, 28), size=wx.Size(669, 56),
+      style=wx.TAB_TRAVERSAL)
+
+    self.staticTextDescription = wx.StaticText(id=wxID_DIALOGEDITSPECTRUMSTATICTEXTDESCRIPTION,
+      label='Colony code: A012A; file name: a012a.1.DAT; Status: ACTIVE', name='staticTextDescription', parent=self, pos=wx.Point(5, 5),
+      size=wx.Size(669, 13), style=0)
+    self.staticTextDescription.SetFont(wx.Font(8, wx.SWISS, wx.NORMAL, wx.BOLD, False, 'MS Shell Dlg 2'))
+
+    self.buttonActivate = wx.Button(id=wxID_DIALOGEDITSPECTRUMBUTTONACTIVATE, label='&Activate', name='buttonActivate', parent=self.panelActions,
+      pos=wx.Point(90, 5), size=wx.Size(75, 23), style=0)
+    self.buttonActivate.Bind(wx.EVT_BUTTON, self.OnButtonActivateButton, id=wxID_DIALOGEDITSPECTRUMBUTTONACTIVATE)
+
+    self.buttonDeactivate = wx.Button(id=wxID_DIALOGEDITSPECTRUMBUTTONDEACTIVATE, label='&Deactivate', name='buttonDeactivate',
+      parent=self.panelActions, pos=wx.Point(175, 5), size=wx.Size(75, 23), style=0)
+    self.buttonDeactivate.Bind(wx.EVT_BUTTON, self.OnButtonDeactivateButton, id=wxID_DIALOGEDITSPECTRUMBUTTONDEACTIVATE)
+
+    self.notebook1 = wx.Notebook(id=wxID_DIALOGEDITSPECTRUMNOTEBOOK1, name='notebook1', parent=self, pos=wx.Point(5, 94), size=wx.Size(669, 419),
+      style=0)
+
+    self.panelChart = wx.Panel(id=wxID_DIALOGEDITSPECTRUMPANELCHART, name='panelChart', parent=self.notebook1, pos=wx.Point(0, 0), size=wx.Size(661,
+      393), style=wx.TAB_TRAVERSAL)
+
+    self.textCtrlReport = wx.TextCtrl(id=wxID_DIALOGEDITSPECTRUMTEXTCTRLREPORT, name='textCtrlReport', parent=self.notebook1, pos=wx.Point(0, 0),
+      size=wx.Size(661, 393), style=wx.TE_MULTILINE, value='')
+
+    self.buttonReload = wx.Button(id=wxID_DIALOGEDITSPECTRUMBUTTONRELOAD, label='Re&load', name='buttonReload', parent=self.panelActions,
+      pos=wx.Point(5, 5), size=wx.Size(75, 23), style=0)
+    self.buttonReload.Bind(wx.EVT_BUTTON, self.OnButtonReloadButton, id=wxID_DIALOGEDITSPECTRUMBUTTONRELOAD)
+
+    self.panelComments = wx.Panel(id=wxID_DIALOGEDITSPECTRUMPANELCOMMENTS, name='panelComments', parent=self.panelActions, pos=wx.Point(255, 0),
+      size=wx.Size(414, 56), style=wx.TAB_TRAVERSAL)
+
+    self.staticTextComments = wx.StaticText(id=wxID_DIALOGEDITSPECTRUMSTATICTEXTCOMMENTS, label='Comments', name='staticTextComments',
+      parent=self.panelComments, pos=wx.Point(5, 5), size=wx.Size(51, 13), style=0)
+
+    self.textCtrlComments = wx.TextCtrl(id=wxID_DIALOGEDITSPECTRUMTEXTCTRLCOMMENTS, name='textCtrlComments', parent=self.panelComments,
+      pos=wx.Point(66, 5), size=wx.Size(268, 46), style=wx.TE_MULTILINE, value='')
+
+    self.buttonSave = wx.Button(id=wxID_DIALOGEDITSPECTRUMBUTTONSAVE, label='&Save', name='buttonSave', parent=self.panelComments, pos=wx.Point(339,
+      0), size=wx.Size(75, 23), style=0)
+    self.buttonSave.Bind(wx.EVT_BUTTON, self.OnButtonSaveButton, id=wxID_DIALOGEDITSPECTRUMBUTTONSAVE)
+
+    self._init_coll_notebook1_Pages(self.notebook1)
+
+    self._init_sizers()
+
+  def __init__(self, parent):
+    self._init_ctrls(parent)
+    self.init_nc(parent)
+    
+    self.idspectrum = -1
+    self.ch = None
+
+
+  def set_mode(self, mode):
+    if mode == "insert":
+      raise error_x("Insert mode not valid for spectrum.")
+    elif mode == "edit":
+      self.SetTitle("Spectrum")
+    else:
+      raise error_x("Invalid mode: %s." % mode)
+    self.mode = mode
+    
+    
+  def set_id(self, value):
+    self.idspectrum = value
+
+  def init_nc(self, prnt):
+    self.nc = nc.NavCanvas(id=wxID_NC, parent=self.panelChart)
+    self.canvas = self.nc.Canvas
+    self.boxSizerChart.AddWindow(self.nc, 1, border=1, flag=wx.ALL | wx.GROW)
+    self.panelChart.Layout()
+
+
+  def set_active(self, flag):
+    t_deact_spectrum.set_flag_inactive(not flag, self.idspectrum, session.iddeact)
+    self.load()
+      
+  def OnButtonActivateButton(self, event):
+    if self.idspectrum < 1:
+      raise error_x("idspectrum has not been passed to the spectrum dialog!")
+
+    self.set_active(1)
+
+  def OnButtonDeactivateButton(self, event):
+    if self.idspectrum < 1:
+      raise error_x("idspectrum has not been passed to the spectrum dialog!")
+
+    self.set_active(0)
+
+  def OnButtonReloadButton(self, event):
+    self.load()
+
+  def load(self):
+    if self.idspectrum < 1:
+      raise error_x("idspectrum has not been passed to the spectrum dialog!")
+
+
+    # Top description    
+    (file_name, comments, vector, flag_inactive) = t_spectrum.get_cursor_data(field_names=["file_name", "comments", "series.vector", "flag_inactive"], iddomain=session.iddomain, 
+    idspectrum=self.idspectrum, iddeact=session.iddeact).fetchone()
+    self.staticTextDescription.SetLabel("File name: %s ; Status: %s" % (file_name, flag_inactive == 1 and "inactive" or "ACTIVE"))
+
+    # Comments
+    self.textCtrlComments.SetValue(comments.__str__())
+
+
+    # Chart
+    from misc import chart_from_colony
+    self.ch = chart_from_colony(t_spectrum.get_value_from_id("idcolony", self.idspectrum), self.idspectrum)
+    self.ch.fc = self.canvas
+    
+    tt = self.textCtrlReport
+    
+    spectrum_judge_data = t_spectrum_judge.get_values_1spectrum(("idjudge", "params"), self.idspectrum)
+    
+    for (idjudge, params) in spectrum_judge_data:
+      (name, class_name) = t_judge.get_values_from_id(("name", "class_name"), idjudge)
+      
+      jg = judge_object(class_name)
+      jm = jg.judgement_object()
+      jm.set_params(params)
+      
+      tt.AppendText("Judge '%s' says '%s'.\n---\n" % (name, jm.get_default_value()))
+      
+   
+    tt.AppendText("Data:\n"+str(vector))
+
+    if self.ch:
+      self.ch.draw()
+
+
+  def OnDialogEditSpectrumActivate(self, event):
+    self.load()
+
+  def OnButtonSaveButton(self, event):
+    d = {"comments": self.textCtrlComments.GetValue()}
+    t_spectrum.update(d, self.idspectrum)

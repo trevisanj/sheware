@@ -1,0 +1,5 @@
+import file_importer_pirouette_dat
+
+def get_list():
+  """Returns a tuple ((class object, name), ..."""
+  return ((file_importer_pirouette_dat.file_importer_pirouette_dat, file_importer_pirouette_dat.name))

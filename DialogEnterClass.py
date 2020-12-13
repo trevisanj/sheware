@@ -1,0 +1,366 @@
+#Boa:Dialog:DialogEnterClass
+# Menu option: Classify colonies manually
+import wx
+import wx.grid
+import db_con
+import session
+from table_colony import t_colony
+from table_judge import t_judge
+from table_score import t_score
+from table_colony_judge import t_colony_judge
+from output import *
+from errors import *
+
+def create(parent):
+    return DialogEnterClass(parent)
+
+[wxID_DIALOGENTERCLASS, wxID_DIALOGENTERCLASSBUTTONBATCH, wxID_DIALOGENTERCLASSBUTTONCHART, wxID_DIALOGENTERCLASSBUTTONLOAD, 
+ wxID_DIALOGENTERCLASSBUTTONMANYCOLONIES, wxID_DIALOGENTERCLASSBUTTONSAVE, wxID_DIALOGENTERCLASSCHOICECLASSIFIER, wxID_DIALOGENTERCLASSGRID, 
+ wxID_DIALOGENTERCLASSPANEL2, wxID_DIALOGENTERCLASSPANELCHOOSEJUDGE, wxID_DIALOGENTERCLASSPANELTOOLBOX, wxID_DIALOGENTERCLASSPANELTOP, 
+ wxID_DIALOGENTERCLASSSTATICTEXTCLASSIFIER, wxID_DIALOGENTERCLASSSTATICTEXTSCORES, wxID_DIALOGENTERCLASSTEXTCTRLSCORES, 
+] = [wx.NewId() for _init_ctrls in range(15)]
+
+class DialogEnterClass(wx.Dialog):
+  def _init_coll_boxSizerChooseJudge_Items(self, parent):
+    # generated method, don't edit
+
+    parent.AddWindow(self.staticTextClassifier, 0, border=0, flag=wx.ALL)
+    parent.AddWindow(self.choiceClassifier, 0, border=5, flag=wx.GROW | wx.ALL)
+    parent.AddWindow(self.buttonLoad, 0, border=5, flag=wx.ALIGN_RIGHT | wx.ALL)
+
+  def _init_coll_boxSizerBody_Items(self, parent):
+    # generated method, don't edit
+
+    parent.AddWindow(self.panelTop, 1, border=0, flag=wx.GROW)
+    parent.AddWindow(self.panelToolbox, 0, border=0, flag=wx.GROW)
+    parent.AddWindow(self.grid, 4, border=0, flag=wx.GROW)
+
+  def _init_coll_boxSizerToolbox_Items(self, parent):
+    # generated method, don't edit
+
+    parent.AddWindow(self.buttonBatch, 0, border=5, flag=wx.ALL)
+    parent.AddWindow(self.buttonChart, 0, border=5, flag=wx.ALL)
+    parent.AddWindow(self.buttonManyColonies, 0, border=5, flag=wx.ALL)
+
+  def _init_coll_boxSizerPossibleScores_Items(self, parent):
+    # generated method, don't edit
+
+    parent.AddWindow(self.staticTextScores, 0, border=0, flag=wx.GROW)
+    parent.AddWindow(self.textCtrlScores, 1, border=0, flag=wx.GROW)
+
+  def _init_coll_boxSizerTop_Items(self, parent):
+    # generated method, don't edit
+
+    parent.AddWindow(self.panelChooseJudge, 0, border=5, flag=wx.ALL | wx.GROW)
+    parent.AddWindow(self.panel2, 0, border=5, flag=wx.EXPAND | wx.ALL)
+    parent.AddWindow(self.buttonSave, 0, border=5, flag=wx.ALL)
+
+  def _init_sizers(self):
+    # generated method, don't edit
+    self.boxSizerBody = wx.BoxSizer(orient=wx.VERTICAL)
+
+    self.boxSizerTop = wx.BoxSizer(orient=wx.HORIZONTAL)
+    self.boxSizerTop.SetMinSize(wx.Size(538, 85))
+
+    self.boxSizerPossibleScores = wx.BoxSizer(orient=wx.VERTICAL)
+
+    self.boxSizerChooseJudge = wx.BoxSizer(orient=wx.VERTICAL)
+
+    self.boxSizerToolbox = wx.BoxSizer(orient=wx.HORIZONTAL)
+
+    self._init_coll_boxSizerBody_Items(self.boxSizerBody)
+    self._init_coll_boxSizerTop_Items(self.boxSizerTop)
+    self._init_coll_boxSizerPossibleScores_Items(self.boxSizerPossibleScores)
+    self._init_coll_boxSizerChooseJudge_Items(self.boxSizerChooseJudge)
+    self._init_coll_boxSizerToolbox_Items(self.boxSizerToolbox)
+
+    self.SetSizer(self.boxSizerBody)
+    self.panelChooseJudge.SetSizer(self.boxSizerChooseJudge)
+    self.panelToolbox.SetSizer(self.boxSizerToolbox)
+    self.panel2.SetSizer(self.boxSizerPossibleScores)
+    self.panelTop.SetSizer(self.boxSizerTop)
+
+  def _init_ctrls(self, prnt):
+    # generated method, don't edit
+    wx.Dialog.__init__(self, id=wxID_DIALOGENTERCLASS, name='DialogEnterClass', parent=prnt, pos=wx.Point(221, 123), size=wx.Size(705, 553),
+      style=wx.DEFAULT_FRAME_STYLE, title='Classify colonies manually')
+    self.SetClientSize(wx.Size(697, 526))
+    self.SetToolTipString('DialogEnterClass')
+    self.Center(wx.BOTH)
+
+    self.panelTop = wx.Panel(id=wxID_DIALOGENTERCLASSPANELTOP, name='panelTop', parent=self, pos=wx.Point(0, 0), size=wx.Size(697, 98),
+      style=wx.TAB_TRAVERSAL)
+    self.panelTop.SetMinSize(wx.Size(534, 83))
+
+    self.panelChooseJudge = wx.Panel(id=wxID_DIALOGENTERCLASSPANELCHOOSEJUDGE, name='panelChooseJudge', parent=self.panelTop, pos=wx.Point(5, 5),
+      size=wx.Size(208, 88), style=wx.TAB_TRAVERSAL)
+
+    self.grid = wx.grid.Grid(id=wxID_DIALOGENTERCLASSGRID, name='grid', parent=self, pos=wx.Point(0, 131), size=wx.Size(697, 394), style=0)
+    self.grid.Bind(wx.grid.EVT_GRID_RANGE_SELECT, self.OnGridGridRangeSelect)
+    self.grid.Bind(wx.grid.EVT_GRID_SELECT_CELL, self.OnGridGridSelectCell)
+    self.grid.Bind(wx.EVT_LEFT_DCLICK, self.OnGridLeftDclick)
+    self.grid.Bind(wx.grid.EVT_GRID_CELL_LEFT_DCLICK, self.OnGridGridCellLeftDclick)
+    self.grid.Bind(wx.grid.EVT_GRID_LABEL_LEFT_DCLICK, self.OnGridGridLabelLeftDclick)
+
+
+    self.buttonSave = wx.Button(id=wxID_DIALOGENTERCLASSBUTTONSAVE, label='&Save', name='buttonSave', parent=self.panelTop, pos=wx.Point(466, 5),
+      size=wx.Size(75, 23), style=0)
+    self.buttonSave.Bind(wx.EVT_BUTTON, self.OnButtonSaveButton, id=wxID_DIALOGENTERCLASSBUTTONSAVE)
+
+    self.buttonLoad = wx.Button(id=wxID_DIALOGENTERCLASSBUTTONLOAD, label='&Load', name='buttonLoad', parent=self.panelChooseJudge, pos=wx.Point(128,
+      49), size=wx.Size(75, 23), style=0)
+    self.buttonLoad.Bind(wx.EVT_BUTTON, self.OnButtonLoadButton, id=wxID_DIALOGENTERCLASSBUTTONLOAD)
+
+    self.choiceClassifier = wx.Choice(choices=[], id=wxID_DIALOGENTERCLASSCHOICECLASSIFIER, name='choiceClassifier', parent=self.panelChooseJudge,
+      pos=wx.Point(5, 18), size=wx.Size(198, 21), style=0)
+
+    self.staticTextClassifier = wx.StaticText(id=wxID_DIALOGENTERCLASSSTATICTEXTCLASSIFIER, label='Classifier', name='staticTextClassifier',
+      parent=self.panelChooseJudge, pos=wx.Point(0, 0), size=wx.Size(43, 13), style=0)
+
+    self.panel2 = wx.Panel(id=wxID_DIALOGENTERCLASSPANEL2, name='panel2', parent=self.panelTop, pos=wx.Point(223, 5), size=wx.Size(233, 88),
+      style=wx.TAB_TRAVERSAL)
+
+    self.staticTextScores = wx.StaticText(id=wxID_DIALOGENTERCLASSSTATICTEXTSCORES, label='Possible scores', name='staticTextScores',
+      parent=self.panel2, pos=wx.Point(0, 0), size=wx.Size(233, 13), style=0)
+
+    self.textCtrlScores = wx.TextCtrl(id=wxID_DIALOGENTERCLASSTEXTCTRLSCORES, name='textCtrlScores', parent=self.panel2, pos=wx.Point(0, 13),
+      size=wx.Size(233, 75), style=wx.TE_MULTILINE, value='')
+    self.textCtrlScores.Enable(True)
+    self.textCtrlScores.SetEditable(False)
+
+    self.panelToolbox = wx.Panel(id=wxID_DIALOGENTERCLASSPANELTOOLBOX, name='panelToolbox', parent=self, pos=wx.Point(0, 98), size=wx.Size(697, 33),
+      style=wx.TAB_TRAVERSAL)
+
+    self.buttonBatch = wx.Button(id=wxID_DIALOGENTERCLASSBUTTONBATCH, label='Batch &selected', name='buttonBatch', parent=self.panelToolbox,
+      pos=wx.Point(5, 5), size=wx.Size(91, 23), style=0)
+    self.buttonBatch.Bind(wx.EVT_BUTTON, self.OnButton1Button, id=wxID_DIALOGENTERCLASSBUTTONBATCH)
+
+    self.buttonChart = wx.Button(id=wxID_DIALOGENTERCLASSBUTTONCHART, label='Show spectra', name='buttonChart', parent=self.panelToolbox,
+      pos=wx.Point(106, 5), size=wx.Size(75, 23), style=0)
+    self.buttonChart.Bind(wx.EVT_BUTTON, self.OnButtonChartButton, id=wxID_DIALOGENTERCLASSBUTTONCHART)
+
+    self.buttonManyColonies = wx.Button(id=wxID_DIALOGENTERCLASSBUTTONMANYCOLONIES, label='Batch by colony codes', name='buttonManyColonies',
+      parent=self.panelToolbox, pos=wx.Point(191, 5), size=wx.Size(121, 23), style=0)
+    self.buttonManyColonies.Bind(wx.EVT_BUTTON, self.OnButtonManyColoniesButton, id=wxID_DIALOGENTERCLASSBUTTONMANYCOLONIES)
+
+    self._init_sizers()
+
+  def __init__(self, parent):
+    self._init_ctrls(parent)
+    #self.init_grid()
+    self.init_choices()
+    
+    self.flag_first_load = True
+    self.currentSelection = []
+
+
+  def read_data(self):
+    self.cursor = t_colony.get_cursor_joined_params(session.session.idexperiment, self.idjudge)
+    self.rows = self.cursor.rowcount
+    self.cols = db_con.get_field_count(self.cursor)
+    self.data = self.cursor.fetchall()
+    self.data = map(list, self.data)
+
+  def fill_grid(self):
+    rows = self.grid.GetNumberRows()
+    if rows > 0:
+      self.grid.DeleteRows(0, rows)
+    self.grid.AppendRows(self.rows)
+    
+    p = self.judge.judgement_object()
+    
+    for i in range(0, self.rows):
+      for j in range(0, self.cols):
+        if j == self.params_col_index:
+          p = self.judge.judgement_object()
+          p.set_params(self.data[i][j])
+          self.grid.SetCellValue(i, j, str(p.get_default_value()))
+        else:
+          self.grid.SetCellValue(i, j, str(self.data[i][j]))
+    #self.grid.AutoSize()
+
+
+  def init_choices(self):
+    self.data_cl = t_judge.get_all_data(("id", "name", "class_name"))
+    for (id, name, class_name) in self.data_cl:
+      self.choiceClassifier.Append(name)
+    
+    if len(self.data_cl) > 0:
+      self.choiceClassifier.SetSelection(0)
+
+
+  def init_grid(self):
+    self.read_data()
+    
+    self.grid.CreateGrid(self.rows, self.cols, selmode=wx.grid.Grid.SelectRows)
+    
+    col_names = db_con.get_field_names(self.cursor)
+    for j in range(0, self.cols):
+      if col_names[j] == "colony_id":
+        self.idcolony_col_index = j
+      elif col_names[j] == "colony_code":
+        self.colony_code_index = j
+      elif col_names[j] == "params":
+        self.params_col_index = j
+      self.grid.SetColLabelValue(j, col_names[j])
+    #self.grid.SetColLabelValue(cols, "Classification")
+
+    self.fill_grid()    
+
+    #self.grid.EnableEditing(False)
+
+  def OnButtonLoadButton(self, event):
+    index = self.choiceClassifier.GetSelection()
+    if index < 0:
+      output("No classifier selected!", OUTPUT_ERROR)
+    else:
+      self.idjudge = self.data_cl[index][0]
+      self.judge_class_name = self.data_cl[index][2]
+
+      self.make_judge()
+      self.textCtrlScores.SetValue(self.judge.get_explanation1())
+
+      if self.flag_first_load:
+        self.init_grid()
+        self.flag_first_load = False
+      else:
+        self.read_data()
+        self.fill_grid()
+
+    
+    #if self.flag_firstLoad:
+
+  def make_judge(self):
+      
+    exec "from %(0)s import %(0)s; j = %(0)s()" % {"0": self.judge_class_name}
+    
+    if not j.flag_human:
+      raise error_x("Classifier of class '%s' is not a human classifier!" % self.judge_class_name)
+    
+    j.idjudge = self.idjudge
+    self.judge = j
+    
+
+  def OnButtonSaveButton(self, event):
+    if self.flag_first_load:
+      output("No data has been loaded!", OUTPUT_ERROR)
+    else:
+      output("Saving...")
+      params_s = []      
+      idcolony_s = []
+      for i in range(0, self.rows):
+        self.judge.make_judgement(self.grid.GetCellValue(i, self.cols-1))
+        params_s.append(self.judge.judgement.get_params())
+        idcolony_s.append(self.data[i][self.idcolony_col_index])
+        
+      t_colony_judge.update(idcolony_s, params_s, self.idjudge, session.session.idexperiment)
+      
+      output("Saved.")
+
+  def OnButton1Button(self, event):
+    d = wx.TextEntryDialog(None, 'Enter code', 'Batch assignment', 'None')
+    if d.ShowModal() == wx.ID_OK:
+      code = d.GetValue()
+      
+      for row in self.currentSelection:
+        self.grid.SetCellValue(row, self.params_col_index, code)
+
+  def OnGridGridRangeSelect(self, event):
+    """Taken from http://wiki.wxpython.org/wxGrid#head-f7a7c8e818fb7b06e8565a273adb91a796679343
+    Internal update to the selection tracking list"""
+    if event.Selecting():
+            # adding to the list...
+            for index in range( event.GetTopRow(), event.GetBottomRow()+1):
+                    if index not in self.currentSelection:
+                            self.currentSelection.append( index )
+    else:
+            # removal from list
+            for index in range( event.GetTopRow(), event.GetBottomRow()+1):
+                    while index in self.currentSelection:
+                            self.currentSelection.remove( index )
+#    self.ConfigureForSelection()
+    event.Skip()
+
+
+  def OnGridGridSelectCell(self, event):
+    """Taken from http://wiki.wxpython.org/wxGrid#head-f7a7c8e818fb7b06e8565a273adb91a796679343
+    Internal update to the selection tracking list"""
+    self.currentSelection = [ event.GetRow() ]
+#    self.ConfigureForSelection()
+    event.Skip()
+
+  def call_chart(self):
+    import act_main
+    i = self.grid.GetGridCursorRow()
+    idcolony = self.data[i][2]
+    act_main.chart_colony(idcolony)
+
+  def OnButtonChartButton(self, event):
+    self.call_chart()
+    event.Skip()
+
+  def OnGridLeftDclick(self, event):
+    event.Skip()
+
+  def OnGridGridCellLeftDclick(self, event):
+    self.call_chart()
+    event.Skip()
+
+  def OnButtonManyColoniesButton(self, event):
+    d_colonies = wx.TextEntryDialog(None, 'Enter a list of colony codes separated by ";". No spaces, please.', 'Batch assignment by colony codes', '')
+    if d_colonies.ShowModal() == wx.ID_OK:
+      s_colonies = d_colonies.GetValue()
+      
+      d = wx.TextEntryDialog(None, 'Enter code', 'Batch assignment', 'None')
+      if d.ShowModal() == wx.ID_OK:
+        code = d.GetValue()
+      
+      
+      a_colonies = s_colonies.split(';')
+      flags_found = [False]*len(a_colonies)
+      
+      # let's see if swapping the loops it is faster
+      cnt = 0
+      i = 0
+      s_notfound = ""
+      for row in self.data:
+        flag_found = False
+        i_colony = 0
+        for colony in a_colonies:
+          if row[self.colony_code_index] == colony:
+            self.grid.SetCellValue(i, self.params_col_index, code)
+            cnt += 1
+            flags_found[i_colony] = True
+          
+          i_colony += 1
+          
+        i += 1
+          
+      s_notfound = ""
+      for i_colony in range(0, len(a_colonies)):
+        if not flags_found[i_colony]:
+          s_notfound += (len(s_notfound) > 0 and ", " or "")+a_colonies[i_colony]
+          
+      if len(s_notfound) > 0:
+        s_notfound = "Not found: "+s_notfound+"."
+            
+      wx.MessageBox("Number of replacements: %d. %s" % (cnt, s_notfound), "Information", wx.OK, None)
+
+    event.Skip()
+
+  def OnGridGridLabelLeftDclick(self, event):
+    self.process_sort(event.GetCol())
+  def process_sort(self, col_no):
+    def compare(x, y):
+      a = x[col_no]
+      b = y[col_no]
+      
+      if a < b:
+        return -1
+      elif a > b:
+        return 1
+      return 0
+      
+    self.data.sort(compare)
+    self.fill_grid()
+

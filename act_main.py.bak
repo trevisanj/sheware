@@ -1,0 +1,246 @@
+# Actions for frame_main
+
+import output
+import wx
+from session import session
+from errors import *
+
+from chart import *
+from series import *
+
+
+
+import sys
+import traceback
+def _exceptionhook(type_, value, traceback_):
+  traceback.print_exception(type_, value, traceback_)
+  
+  from MySQLdb import OperationalError
+  
+  if type_ == error_x:
+    output.output(value, output.OUTPUT_ERROR, True)
+  elif type_ == error_abort:
+    output.output("Aborted: "+value.__str__(), output.OUTPUT_INFO, False)
+  elif type_ == OperationalError:
+  print "oiiiiiiiiiiiiiiiiiiiiiiiiiiii"
+  print e.args
+  
+  if isinstance(e, OperationalError) and e.args[0] == 2006:
+    output.output("Connection with database has gone away, will try to reconnect.")
+    output.output("You will still get an error. Please repeat your last operation.")
+    
+    from db_con import con
+    con.disconnect()
+    con.connect()
+  else:
+    output.output(value, output.OUTPUT_ERROR, False)
+  
+sys.excepthook = _exceptionhook
+
+
+
+def handle_error(e):
+  """General error_x handler. This can be changed to raise all x_errors for debugging. Maybe a setup parameter."""
+  
+  output.output(str(e.args), output.OUTPUT_ERROR, True)
+  raise e
+
+
+def chart_colony(idcolony, idspectrum_selected=None):
+  import DialogChart
+
+  dlg_chart = DialogChart.create(None)
+  dlg_chart.idcolony = idcolony
+  dlg_chart.idspectrum_selected = idspectrum_selected
+  try:
+    dlg_chart.ShowModal()
+  finally:
+    dlg_chart.Destroy()
+    dlf_chart = None
+
+
+def exit(frame):
+  frame.Close()
+  
+def file_import():
+  import DialogImport
+  dlg = DialogImport.create(None)
+  try:
+    if session.idexperiment <= 0:
+      raise error_x("Please select an experiment first.")
+
+    dlg.ShowModal()
+  except error_x, e:
+    handle_error(e)      
+  finally:
+    dlg.Destroy()
+  
+
+def select_experiment():
+  import DialogSelX
+  dlg = DialogSelX.create(None)
+  try:
+    dlg.ShowModal()
+  finally:
+    dlg.Destroy()
+  
+
+def enter_class():
+  import DialogEnterClass
+  dlg = DialogEnterClass.create(None)
+  try:
+    if session.idexperiment <= 0:
+      raise error_x("Please select an experiment first.")
+    dlg.ShowModal()
+  except error_x, e:
+    handle_error(e)
+  finally:
+    dlg.Destroy()
+  
+def ann():
+  import DialogAnn1
+  dlg = DialogAnn1.create(None)
+  try:
+    if session.idexperiment <= 0:
+      raise error_x("Please select an experiment first.")
+    dlg.ShowModal()
+  except error_x, e:
+    handle_error(e)
+  finally:
+    dlg.Destroy()
+  
+  
+def scoregroup():
+  import DialogScoregroup
+  dlg = DialogScoregroup.create(None)
+  try:
+    dlg.ShowModal()
+  except error_x, e:
+    handle_error(e)
+  finally:
+    dlg.Destroy()
+  
+def run_train():
+  import DialogRunTrain
+  dlg = DialogRunTrain.create(None)
+  try:
+    dlg.ShowModal()
+  except error_x, e:
+    handle_error(e)
+  finally:
+    dlg.Destroy()
+  
+
+def report1():
+  import DialogReport1
+  dlg = DialogReport1.create(None)
+  try:
+    dlg.ShowModal()
+  finally:
+    dlg.Destroy()
+
+def report2():
+  import DialogReport2
+  dlg = DialogReport2.create(None)
+  try:
+    dlg.ShowModal()
+  finally:
+    dlg.Destroy()
+
+def pca():
+  import DialogPCA
+  dlg = DialogPCA.create(None)
+  try:
+    dlg.ShowModal()
+  finally:
+    dlg.Destroy()
+
+def experiment():
+  import DialogExperiment
+  dlg = DialogExperiment.create(None)
+  try:
+    dlg.ShowModal()
+  finally:
+    dlg.Destroy()
+    
+def judge():
+  import DialogJudge
+  dlg = DialogJudge.create(None)
+  try:
+    dlg.ShowModal()
+  finally:
+    dlg.Destroy()
+
+
+def tray(parent_id=None):
+  import DialogTray
+  dlg = DialogTray.create(None)
+  if parent_id <> None:
+    dlg.set_idexperiment(parent_id)
+  try:
+    dlg.ShowModal()
+  finally:
+    dlg.Destroy()
+
+def slide(parent_id=None):
+  import DialogSlide
+  dlg = DialogSlide.create(None)
+  if parent_id <> None:
+    from table_tray import t_tray
+    dlg.set_idexperiment(t_tray.get_value_from_id("idexperiment", parent_id))
+    dlg.set_idtray(parent_id)
+  try:
+    dlg.ShowModal()
+  finally:
+    dlg.Destroy()
+
+def colony(parent_id=None):
+  import DialogColony
+  dlg = DialogColony.create(None)
+  if parent_id <> None:
+    from table_slide import t_slide
+    dlg.set_idtray(t_slide.get_value_from_id("idtray", parent_id))
+    dlg.set_idslide(parent_id)
+  try:
+    dlg.ShowModal()
+  finally:
+    dlg.Destroy()
+
+def spectrum(parent_id=None):
+  import DialogSpectrum
+  dlg = DialogSpectrum.create(None)
+  if parent_id <> None:
+    from table_colony import t_colony
+    dlg.set_idslide(t_colony.get_value_from_id("idslide", parent_id))
+    dlg.set_idcolony(parent_id)
+  try:
+    dlg.ShowModal()
+  finally:
+    dlg.Destroy()
+
+
+
+def report_maps():
+  import DialogReport3
+  dlg = DialogReport3.create(None)
+  try:
+    dlg.ShowModal()
+  finally:
+    dlg.Destroy()
+
+
+def domain():
+  import DialogDomain
+  dlg = DialogDomain.create(None)
+  try:
+    dlg.ShowModal()
+  finally:
+    dlg.Destroy()
+
+def deact():
+  import DialogDeact
+  dlg = DialogDeact.create(None)
+  try:
+    dlg.ShowModal()
+  finally:
+    dlg.Destroy()

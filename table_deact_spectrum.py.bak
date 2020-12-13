@@ -1,0 +1,37 @@
+from table import *
+from sql_mounter import *
+
+class table_deact_spectrum(table):
+  table_name = "deact_spectrum"
+
+
+  def get_count(self, iddeact=None, idexperiment=None, flag_inactive=None):
+    joins = []
+    wheres = []
+    
+    if idexperiment:
+      joins.append(("spectrum", "spectrum.id = deact_spectrum.idspectrum"));
+      wheres.append("spectrum.idexperiment = %d" % idexperiment)
+      
+    if flag_inactive:
+      wheres.add("flag_inactive = "+str(flag_inactive))
+      
+    if iddeact:
+      wheres.append("deact_spectrum.iddeact = %d" % iddeact)
+      
+    o = select_mounter(tables=("deact_spectrum",),
+                       fields="count(deact_spectrum.id)",
+                       joins=joins, 
+                       wheres=wheres)
+    
+                       
+    return con.query_scalar(o.mount_select())
+
+
+  def set_flag_inactive(self, flag_inactive, idspectrum, iddeact):
+    vv = ((flag_inactive and 1 or 0), idspectrum, iddeact)
+    cur = con.execute("update deact_spectrum set flag_inactive = %s where idspectrum = %s and iddeact = %s" % vv)
+    if cur.rowcount == 0:
+			con.execute("insert into deact_spectrum (flag_inactive, idspectrum, iddeact) values (%s, %s, %s)" % vv)      
+
+t_deact_spectrum = table_deact_spectrum()

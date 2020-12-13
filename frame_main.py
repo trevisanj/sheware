@@ -1,0 +1,241 @@
+#Boa:Frame:frame_main
+
+import wx
+import act_main
+import Dialog1
+
+def create(parent):
+    return frame_main(parent)
+
+[wxID_FRAME_MAIN, wxID_FRAME_MAINSTATUSBAR1, wxID_FRAME_MAINTEXTCTRLLOG, 
+] = [wx.NewId() for _init_ctrls in range(3)]
+
+[wxID_FRAME_MAINMENU2ITEMS0, wxID_FRAME_MAINMENU2ITEMS1, 
+ wxID_FRAME_MAINMENU2ITEMS2, wxID_FRAME_MAINMENU2ITEMS3, 
+ wxID_FRAME_MAINMENU2ITEMS4, wxID_FRAME_MAINMENU2ITEMS5, 
+] = [wx.NewId() for _init_coll_menu2_Items in range(6)]
+
+[wxID_FRAME_MAINMENU1ITEMS0, wxID_FRAME_MAINMENU1ITEMS1, 
+ wxID_FRAME_MAINMENU1ITEMS2, wxID_FRAME_MAINMENU1ITEMS3, 
+ wxID_FRAME_MAINMENU1ITEMS4, wxID_FRAME_MAINMENU1ITEMS5, 
+] = [wx.NewId() for _init_coll_menu1_Items in range(6)]
+
+[wxID_FRAME_MAINMENU3ITEMS0, wxID_FRAME_MAINMENU3ITEMS1, 
+ wxID_FRAME_MAINMENU3ITEMS10, wxID_FRAME_MAINMENU3ITEMS11, 
+ wxID_FRAME_MAINMENU3ITEMS12, wxID_FRAME_MAINMENU3ITEMS13, 
+ wxID_FRAME_MAINMENU3ITEMS14, wxID_FRAME_MAINMENU3ITEMS15, 
+ wxID_FRAME_MAINMENU3ITEMS16, wxID_FRAME_MAINMENU3ITEMS17, 
+ wxID_FRAME_MAINMENU3ITEMS2, wxID_FRAME_MAINMENU3ITEMS3, 
+ wxID_FRAME_MAINMENU3ITEMS4, wxID_FRAME_MAINMENU3ITEMS5, 
+ wxID_FRAME_MAINMENU3ITEMS6, wxID_FRAME_MAINMENU3ITEMS7, 
+ wxID_FRAME_MAINMENU3ITEMS8, wxID_FRAME_MAINMENU3ITEMS9, 
+] = [wx.NewId() for _init_coll_menu3_Items in range(18)]
+
+[wxID_FRAME_MAINMENUTABLESITEMSDEACT, wxID_FRAME_MAINMENUTABLESITEMSDOMAIN, wxID_FRAME_MAINMENUTABLESITEMSEXPERIMENT, 
+ wxID_FRAME_MAINMENUTABLESITEMSJUDGE, wxID_FRAME_MAINMENUTABLESITEMSSCOREGROUP, 
+] = [wx.NewId() for _init_coll_menuTables_Items in range(5)]
+
+[wxID_FRAME_MAINMENUACTIONSITEMSANNOTATETRAY, wxID_FRAME_MAINMENUACTIONSITEMSCOPYX, wxID_FRAME_MAINMENUACTIONSITEMSENTERCLASS, 
+ wxID_FRAME_MAINMENUACTIONSITEMSRUNTRAIN, wxID_FRAME_MAINMENUACTIONSITEMSSELX, 
+] = [wx.NewId() for _init_coll_menuActions_Items in range(5)]
+
+[wxID_FRAME_MAINMENUFILEITEMS1, wxID_FRAME_MAINMENUFILEITEMSEXIT, wxID_FRAME_MAINMENUFILEITEMSFILEIMPORT, 
+] = [wx.NewId() for _init_coll_menuFile_Items in range(3)]
+
+[wxID_FRAME_MAINMENUREPORTSITEMSCOMPARISON, wxID_FRAME_MAINMENUREPORTSITEMSMAPS, wxID_FRAME_MAINMENUREPORTSITEMSPCA, 
+ wxID_FRAME_MAINMENUREPORTSITEMSREPORT1, 
+] = [wx.NewId() for _init_coll_menuReports_Items in range(4)]
+
+[wxID_FRAME_MAINMENUHELPITEMS0] = [wx.NewId() for _init_coll_menuHelp_Items in range(1)]
+
+class frame_main(wx.Frame):
+  def _init_coll_boxSizerLog_Items(self, parent):
+    # generated method, don't edit
+
+    parent.AddWindow(self.textCtrlLog, 1, border=0, flag=wx.TOP | wx.BOTTOM | wx.ALIGN_TOP | wx.ALIGN_BOTTOM | wx.EXPAND | wx.GROW)
+
+  def _init_coll_menuFile_Items(self, parent):
+    # generated method, don't edit
+
+    parent.Append(help='', id=wxID_FRAME_MAINMENUFILEITEMSFILEIMPORT, kind=wx.ITEM_NORMAL, text='Import')
+    parent.Append(help='', id=wxID_FRAME_MAINMENUFILEITEMS1, kind=wx.ITEM_NORMAL, text='-')
+    parent.Append(help='', id=wxID_FRAME_MAINMENUFILEITEMSEXIT, kind=wx.ITEM_NORMAL, text='Exit')
+    self.Bind(wx.EVT_MENU, self.OnMenuFileItemsfileimportMenu, id=wxID_FRAME_MAINMENUFILEITEMSFILEIMPORT)
+    self.Bind(wx.EVT_MENU, self.OnMenuFileItemsexitMenu, id=wxID_FRAME_MAINMENUFILEITEMSEXIT)
+
+  def _init_coll_menuTables_Items(self, parent):
+    # generated method, don't edit
+
+    parent.Append(help='', id=wxID_FRAME_MAINMENUTABLESITEMSEXPERIMENT, kind=wx.ITEM_NORMAL, text='&Experiments')
+    parent.Append(help='Manage score groups', id=wxID_FRAME_MAINMENUTABLESITEMSSCOREGROUP, kind=wx.ITEM_NORMAL, text='Score &groups')
+    parent.Append(help='', id=wxID_FRAME_MAINMENUTABLESITEMSJUDGE, kind=wx.ITEM_NORMAL, text='Cl&assifiers')
+    parent.Append(help='', id=wxID_FRAME_MAINMENUTABLESITEMSDOMAIN, kind=wx.ITEM_NORMAL, text='&Domains')
+    parent.Append(help='', id=wxID_FRAME_MAINMENUTABLESITEMSDEACT, kind=wx.ITEM_NORMAL, text='&Activation schemes')
+    self.Bind(wx.EVT_MENU, self.OnMenuTablesItemsScoregroupMenu, id=wxID_FRAME_MAINMENUTABLESITEMSSCOREGROUP)
+    self.Bind(wx.EVT_MENU, self.OnMenuTablesItemsexperimentMenu, id=wxID_FRAME_MAINMENUTABLESITEMSEXPERIMENT)
+    self.Bind(wx.EVT_MENU, self.OnMenuTablesItemsjudgeMenu, id=wxID_FRAME_MAINMENUTABLESITEMSJUDGE)
+    self.Bind(wx.EVT_MENU, self.OnMenuTablesItemsdomainMenu, id=wxID_FRAME_MAINMENUTABLESITEMSDOMAIN)
+    self.Bind(wx.EVT_MENU, self.OnMenuTablesItemsdeactMenu, id=wxID_FRAME_MAINMENUTABLESITEMSDEACT)
+
+  def _init_coll_menuReports_Items(self, parent):
+    # generated method, don't edit
+
+    parent.Append(help='', id=wxID_FRAME_MAINMENUREPORTSITEMSREPORT1, kind=wx.ITEM_NORMAL, text='&Scans with classifications')
+    parent.Append(help='', id=wxID_FRAME_MAINMENUREPORTSITEMSCOMPARISON, kind=wx.ITEM_NORMAL, text='&Comparisons between classifications')
+    parent.Append(help='', id=wxID_FRAME_MAINMENUREPORTSITEMSMAPS, kind=wx.ITEM_NORMAL, text='&Maps')
+    parent.Append(help='', id=wxID_FRAME_MAINMENUREPORTSITEMSPCA, kind=wx.ITEM_NORMAL, text='&PCA')
+    self.Bind(wx.EVT_MENU, self.OnMenuReportsItemsreport1Menu, id=wxID_FRAME_MAINMENUREPORTSITEMSREPORT1)
+    self.Bind(wx.EVT_MENU, self.OnMenuReportsItemscomparisonMenu, id=wxID_FRAME_MAINMENUREPORTSITEMSCOMPARISON)
+    self.Bind(wx.EVT_MENU, self.OnMenuReportsItemspcaMenu, id=wxID_FRAME_MAINMENUREPORTSITEMSPCA)
+    self.Bind(wx.EVT_MENU, self.OnMenuReportsItemsmapsMenu, id=wxID_FRAME_MAINMENUREPORTSITEMSMAPS)
+
+  def _init_coll_menuBar_Menus(self, parent):
+    # generated method, don't edit
+
+    parent.Append(menu=self.menuFile, title='&File')
+    parent.Append(menu=self.menuTables, title='&Tables')
+    parent.Append(menu=self.menuActions, title='&Actions')
+    parent.Append(menu=self.menuReports, title='&Reports')
+    parent.Append(menu=self.menuHelp, title='&Help')
+
+  def _init_coll_menuHelp_Items(self, parent):
+    # generated method, don't edit
+
+    parent.Append(help='', id=wxID_FRAME_MAINMENUHELPITEMS0, kind=wx.ITEM_NORMAL, text='About')
+
+  def _init_coll_menuActions_Items(self, parent):
+    # generated method, don't edit
+
+    parent.Append(help='', id=wxID_FRAME_MAINMENUACTIONSITEMSSELX, kind=wx.ITEM_NORMAL, text='&Select experiment')
+    parent.Append(help='', id=wxID_FRAME_MAINMENUACTIONSITEMSANNOTATETRAY, kind=wx.ITEM_NORMAL, text='&Map trays and slides')
+    parent.Append(help='', id=wxID_FRAME_MAINMENUACTIONSITEMSENTERCLASS, kind=wx.ITEM_NORMAL, text='C&lassify colonies manually')
+    parent.Append(help='', id=wxID_FRAME_MAINMENUACTIONSITEMSRUNTRAIN, kind=wx.ITEM_NORMAL, text='&Run/train judges')
+    parent.Append(help='', id=wxID_FRAME_MAINMENUACTIONSITEMSCOPYX, kind=wx.ITEM_NORMAL, text='&Copy experiment')
+    self.Bind(wx.EVT_MENU, self.OnMenuActionsItemsselxMenu, id=wxID_FRAME_MAINMENUACTIONSITEMSSELX)
+    self.Bind(wx.EVT_MENU, self.OnMenuActionsItemsannotatetrayMenu, id=wxID_FRAME_MAINMENUACTIONSITEMSANNOTATETRAY)
+    self.Bind(wx.EVT_MENU, self.OnMenuActionsItemsruntrainMenu, id=wxID_FRAME_MAINMENUACTIONSITEMSRUNTRAIN)
+    self.Bind(wx.EVT_MENU, self.OnMenuActionsItemscopyxMenu, id=wxID_FRAME_MAINMENUACTIONSITEMSCOPYX)
+    self.Bind(wx.EVT_MENU, self.OnMenuActionsItemsenterclassMenu, id=wxID_FRAME_MAINMENUACTIONSITEMSENTERCLASS)
+
+  def _init_coll_statusBar1_Fields(self, parent):
+    # generated method, don't edit
+    parent.SetFieldsCount(1)
+
+    parent.SetStatusText(number=0, text='Status')
+
+    parent.SetStatusWidths([-1])
+
+  def _init_sizers(self):
+    # generated method, don't edit
+    self.boxSizerLog = wx.BoxSizer(orient=wx.VERTICAL)
+
+    self._init_coll_boxSizerLog_Items(self.boxSizerLog)
+
+    self.SetSizer(self.boxSizerLog)
+
+  def _init_utils(self):
+    # generated method, don't edit
+    self.menuBar = wx.MenuBar()
+
+    self.menuFile = wx.Menu(title='')
+
+    self.menuTables = wx.Menu(title='')
+
+    self.menuActions = wx.Menu(title='')
+
+    self.menuHelp = wx.Menu(title='')
+
+    self.menuReports = wx.Menu(title='')
+
+    self._init_coll_menuBar_Menus(self.menuBar)
+    self._init_coll_menuFile_Items(self.menuFile)
+    self._init_coll_menuTables_Items(self.menuTables)
+    self._init_coll_menuActions_Items(self.menuActions)
+    self._init_coll_menuHelp_Items(self.menuHelp)
+    self._init_coll_menuReports_Items(self.menuReports)
+
+  def _init_ctrls(self, prnt):
+    # generated method, don't edit
+    wx.Frame.__init__(self, id=wxID_FRAME_MAIN, name='frame_main', parent=prnt, pos=wx.Point(416, 285), size=wx.Size(501, 364),
+      style=wx.MAXIMIZE | wx.DEFAULT_FRAME_STYLE, title='SHEware Python database client')
+    self._init_utils()
+    self.SetClientSize(wx.Size(493, 337))
+    self.SetMenuBar(self.menuBar)
+
+    self.statusBar1 = wx.StatusBar(id=wxID_FRAME_MAINSTATUSBAR1, name='statusBar1', parent=self, style=0)
+    self._init_coll_statusBar1_Fields(self.statusBar1)
+    self.SetStatusBar(self.statusBar1)
+
+    self.textCtrlLog = wx.TextCtrl(id=wxID_FRAME_MAINTEXTCTRLLOG, name='textCtrlLog', parent=self, pos=wx.Point(0, 0), size=wx.Size(493, 337),
+      style=wx.TE_MULTILINE, value='')
+    self.textCtrlLog.SetFont(wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL, False,'Courier New'))
+    self.textCtrlLog.SetForegroundColour(wx.Colour(0, 255, 0))
+    self.textCtrlLog.SetBackgroundColour(wx.Colour(0, 0, 0))
+
+    self._init_sizers()
+
+  def __init__(self, parent):
+    self._init_ctrls(parent)
+
+  def OnMenuFileItemsfileimportMenu(self, event):
+    act_main.file_import()
+
+  def OnMenuFileItemsexitMenu(self, event):
+    act_main.exit(self)
+
+  def OnMenuActionsItemsselxMenu(self, event):
+    act_main.select_experiment()
+
+  def OnMenuTablesItemstrayMenu(self, event):
+    act_main.tray()
+
+  def OnMenuActionsItemsannotatetrayMenu(self, event):
+    act_main.ann()
+
+  def OnMenuTablesItemsScoregroupMenu(self, event):
+    act_main.scoregroup()
+
+  def OnMenuActionsItemsruntrainMenu(self, event):
+    act_main.run_train()
+
+  def OnMenuReportsItemsreport1Menu(self, event):
+    act_main.report1()
+
+  def OnMenuReportsItemscomparisonMenu(self, event):
+    act_main.report2()
+
+  def OnMenuReportsItemspcaMenu(self, event):
+    act_main.pca()
+
+  def OnMenuActionsItemscopyxMenu(self, event):
+    act_main.copyx()
+
+  def OnMenuActionsItemsenterclassMenu(self, event):
+    act_main.enter_class()
+
+  def OnMenuTablesItemsslideMenu(self, event):
+    act_main.slide()
+
+  def OnMenuTablesItemscolonyMenu(self, event):
+    act_main.colony()
+
+  def OnMenuTablesItemsspectrumMenu(self, event):
+    act_main.spectrum()
+
+  def OnMenuTablesItemsexperimentMenu(self, event):
+    act_main.experiment()
+
+  def OnMenuReportsItemsmapsMenu(self, event):
+    act_main.report_maps()
+
+  def OnMenuTablesItemsjudgeMenu(self, event):
+    act_main.judge()
+
+  def OnMenuTablesItemsdomainMenu(self, event):
+    act_main.domain()
+
+  def OnMenuTablesItemsdeactMenu(self, event):
+    act_main.deact()
+
+
+          

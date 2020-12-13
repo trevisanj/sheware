@@ -1,0 +1,77 @@
+#Boa:Dialog:DialogOkCancel
+
+import wx
+
+def create(parent):
+    return DialogOkCancel(parent)
+
+[wxID_DIALOGOKCANCEL, wxID_DIALOGOKCANCELBUTTONCANCEL, 
+ wxID_DIALOGOKCANCELBUTTONOK, wxID_DIALOGOKCANCELPANELBOTTOM, 
+ wxID_DIALOGOKCANCELPANELCLIENT, 
+] = [wx.NewId() for _init_ctrls in range(5)]
+
+class DialogOkCancel(wx.Dialog):
+  def _init_coll_boxSizerBottomPanel_Items(self, parent):
+    # generated method, don't edit
+
+    parent.AddWindow(self.buttonOk, 1, border=10, flag=wx.ALIGN_RIGHT)
+    parent.AddWindow(self.buttonCancel, 1, border=10, flag=wx.ALIGN_RIGHT)
+
+  def _init_coll_boxSizerFrame_Items(self, parent):
+    # generated method, don't edit
+
+    parent.AddWindow(self.panelClient, 1, border=0, flag=wx.GROW)
+    parent.AddWindow(self.panelBottom, 0, border=0, flag=wx.GROW)
+
+    def _init_sizers(self):
+    # generated method, don't edit
+    self.boxSizerFrame = wx.BoxSizer(orient=wx.VERTICAL)
+
+    self.boxSizerBottomPanel = wx.BoxSizer(orient=wx.HORIZONTAL)
+
+    self._init_coll_boxSizerFrame_Items(self.boxSizerFrame)
+    self._init_coll_boxSizerBottomPanel_Items(self.boxSizerBottomPanel)
+
+    self.SetSizer(self.boxSizerFrame)
+    self.panelBottom.SetSizer(self.boxSizerBottomPanel)
+
+    def _init_ctrls(self, prnt):
+    # generated method, don't edit
+    wx.Dialog.__init__(self, id=wxID_DIALOGOKCANCEL, name='DialogOkCancel',
+      parent=prnt, pos=wx.Point(525, 148), size=wx.Size(400, 250),
+      style=wx.DEFAULT_DIALOG_STYLE, title='Ok/Cancel')
+    self.SetClientSize(wx.Size(384, 214))
+
+    self.panelBottom = wx.Panel(id=wxID_DIALOGOKCANCELPANELBOTTOM,
+      name='panelBottom', parent=self, pos=wx.Point(0, 191), size=wx.Size(384,
+      23), style=wx.TAB_TRAVERSAL)
+
+    self.buttonOk = wx.Button(id=wxID_DIALOGOKCANCELBUTTONOK, label='&Ok',
+      name='buttonOk', parent=self.panelBottom, pos=wx.Point(0, 0),
+      size=wx.Size(192, 23), style=0)
+    self.buttonOk.SetDefault()
+    self.buttonOk.Bind(wx.EVT_BUTTON, self.OnButtonOkButton,
+      id=wxID_DIALOGOKCANCELBUTTONOK)
+
+    self.buttonCancel = wx.Button(id=wxID_DIALOGOKCANCELBUTTONCANCEL,
+      label='&Cancel', name='buttonCancel', parent=self.panelBottom,
+      pos=wx.Point(192, 0), size=wx.Size(192, 23), style=0)
+    self.buttonCancel.Bind(wx.EVT_BUTTON, self.OnButtonCancelButton,
+      id=wxID_DIALOGOKCANCELBUTTONCANCEL)
+
+    self.panelClient = wx.Panel(id=wxID_DIALOGOKCANCELPANELCLIENT,
+      name='panelClient', parent=self, pos=wx.Point(0, 0), size=wx.Size(384,
+      191), style=wx.TAB_TRAVERSAL)
+
+    self._init_sizers()
+
+    def __init__(self, parent):
+        self._init_ctrls(parent)
+
+    def OnButtonOkButton(self, event):
+        self.result = wx.ID_OK
+        self.Close()
+
+    def OnButtonCancelButton(self, event):
+        self.result = wx.ID_CANCEL
+        self.Close()

@@ -1,0 +1,20 @@
+#Boa:Frame:frame_main
+
+import wx
+
+def create(parent):
+    return frame_main(parent)
+
+[wxID_FRAME_MAIN] = [wx.NewId() for _init_ctrls in range(1)]
+
+class frame_main(wx.Frame):
+    def _init_ctrls(self, prnt):
+        # generated method, don't edit
+        wx.Frame.__init__(self, id=wxID_FRAME_MAIN, name='frame_main',
+              parent=prnt, pos=wx.Point(354, 282), size=wx.Size(434, 373),
+              style=wx.MAXIMIZE | wx.DEFAULT_FRAME_STYLE,
+              title='ATR Experiements')
+        self.SetClientSize(wx.Size(418, 337))
+
+    def __init__(self, parent):
+        self._init_ctrls(parent)

@@ -1,0 +1,154 @@
+from errors import *
+import time
+
+OUTPUT_FILE = 1
+OUTPUT_BUFFER = 2
+OUTPUT_SCREEN = 3
+
+class html(object):
+  buffer = ""
+  h = None
+  
+  
+  def __init__(self, output_type = OUTPUT_BUFFER, file_name = ""):
+    self.output_type = output_type
+    self.file_name = file_name
+    
+  
+  def assure_file(self):
+    """Checks file is open; opens it if not; if not self.file_name, then raises an exception."""
+    if self.h == None:
+      if not self.file_name:
+        raise error_x("File name is not defined.")
+      self.h = open(self.file_name, "w")
+    
+  
+  
+  
+  def add(self, s):
+    if self.output_type == OUTPUT_BUFFER:
+      self.buffer += s+"\n"
+    elif self.output_type == OUTPUT_FILE:
+      self.assure_file()
+      self.h.write(s+"\n")
+    else: #if self.output_type == OUTPUT_SCREEN:
+      print s
+  
+  def _styles(self):
+    self.add("""
+<style>\n
+    .td_def { border: 1px solid black; vertical-align: top; padding: 2px;}
+    .p_def {}
+    * { font-family: Times New Roman, Serif; font-size: 14px; }
+    .th {background-color: #202020; font-weight: bold; color: #e0e0e0; }
+    .td {color: #101010; }
+    .big {font-size: 28px; font-weight: bold;}
+    .big2 {font-size: 24px; font-weight: bold;}
+    .title1 {font-size: 26px; font-weight: bold; padding: 10px; }
+    .title2 {font-size: 22px; font-weight: bold; padding: 7px; }
+    .title3 {font-size: 18px; font-weight: bold; padding: 5px; }
+    .nob {border: none;}
+</style>
+""")
+  
+  def open(self):
+    self.add("""
+<html>\n
+<head>\n
+<title>Report</title>\n
+<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">""")
+    self._styles()
+    self.add("""
+</head>\n
+<body>\n""")
+
+  def subtitle(self, s):
+    self.add("<p class=big2>"+s.__str__()+"</p>")
+  def title1(self, s):
+    self.add("<p class=title1>"+s.__str__()+"</p>")
+  def title2(self, s):
+    self.add("<p class=title2>"+s.__str__()+"</p>")
+  def title3(self, s):
+    self.add("<p class=title3>"+s.__str__()+"</p>")
+
+  def raw(self, s):
+    self.add(str(s))
+
+  def page_header(self, s):
+    self.add("""
+<table border=0 style='border: none;' cellspacing=5px>\n 
+<tr>\n 
+<td class='td_def' style='background-color: #0062ae; background-image: url(logo_bg.png);'>
+  <img src="logo.png"/>\n
+</td>\n 
+<td class='td_def' style='background-color: #3b9ae3'>%s</td>\n 
+<td class='td_def' style='background-color: #95d1ff'>%s</td>\n 
+<td class='nob' style='text-align: right'>&nbsp;</td>\n 
+<td class='nob' style='vertical-align: bottom; padding-left: 15px;'><i>&nbsp;</i></td>\n 
+</tr>\n
+</table>\n""" % (s and "<br><span class=big2>"+str(s)+"</span>" or "", time.strftime("%d/%b/%Y")))
+
+#    self.add("""
+#<table border=0 style='border: none;' cellspacing=5px>\n 
+#<tr>\n 
+#<td class='td_def' style='background-color: #0062ae; width: 10px'>&nbsp;</td>\n 
+#<td class='td_def' style='background-color: #3b9ae3; width: 16px'>&nbsp;</td>\n 
+#<td class='td_def' style='background-color: #95d1ff; width: 27px'>&nbsp;</td>\n 
+#<td class='nob' style='text-align: right'>%s</td>\n 
+#<td class='nob' style='vertical-align: bottom; padding-left: 15px;'><i>&nbsp;%s</i></td>\n 
+#</tr>\n
+#</table>\n""" % (s and "<br><span class=big2>"+str(s)+"</span>" or "", time.strftime("%d/%b/%Y")))
+
+
+  def close(self):
+    self.add("</body>\n</html>")
+    if self.output_type == OUTPUT_BUFFER:
+      self.buffer = ""
+    elif self.output_type == OUTPUT_FILE:
+      self.h.close()
+
+  def open_table(self):
+    self.add("<table width=100%>")
+
+  def close_table(self):
+    self.add("</table>")
+
+  def open_tr(self):
+    self.add("<tr>")
+
+  def close_tr(self):
+    self.add("</tr>")
+
+  def td(self, s, cl="td_def", w=None):
+    self.add("<td class="+cl+(w and " width="+str(w) or "")+">"+str(s)+"</td>")
+
+  def th(self, s, w=None):
+    self.td(s, "th", w)
+
+  def td_color(self, s, color, w=None):
+    self.add("<td class=td_def"+(w and " width="+str(w) or "")+" style='background-color: "+color+"; color: white'>"+str(s)+"</td>")
+
+        
+  def open_td(self, w=None):
+    self.add("<td class=td_def"+(w and " width="+str(w) or "")+">")
+
+  def close_td(self):
+    self.add("</td>")
+
+  def open_p(self):
+    self.add("<p class=p_def>")
+    
+  def open_p_center(self):
+    self.add("<p class=p_def style='text-align: center'>")
+
+  def close_p(self):
+    self.add("</p>")
+    
+  def p(self, s):
+    self.open_p()
+    self.raw(s)
+    self.close_p()
+
+  def img(self, src, w=None, h=None):
+    self.add("<img src='"+src+"' "+(w and " width="+str(w) or "")+(h and " height="+str(h) or "")+"/>")
+    

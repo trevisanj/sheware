@@ -1,0 +1,274 @@
+#Boa:Dialog:DialogSelX
+
+import wx
+from output import *
+from errors import *
+from session import session
+from table_experiment import t_experiment
+from table_domain import t_domain
+from table_series import t_series
+from table_deact import t_deact
+from table_deact_spectrum import t_deact_spectrum
+from table_setup import t_setup
+from table_spectrum import t_spectrum
+
+
+
+
+
+
+def create(parent):
+    return DialogSelX(parent)
+
+[wxID_DIALOGSELX, wxID_DIALOGSELXBUTTONCANCEL, wxID_DIALOGSELXBUTTONOK, wxID_DIALOGSELXCHOICEDEACT, wxID_DIALOGSELXCHOICEDOMAIN, 
+ wxID_DIALOGSELXCHOICEEXPERIMENT, wxID_DIALOGSELXPANELBOTTOM, wxID_DIALOGSELXPANELCLIENT, wxID_DIALOGSELXSTATICTEXTDEACT, 
+ wxID_DIALOGSELXSTATICTEXTDOMAIN, wxID_DIALOGSELXSTATICTEXTEXPERIMENT, 
+] = [wx.NewId() for _init_ctrls in range(11)]
+
+class DialogSelX(wx.Dialog):
+  def _init_coll_flexGridSizerBody_Growables(self, parent):
+    # generated method, don't edit
+
+    parent.AddGrowableCol(1)
+
+  def _init_coll_boxSizerBottomPanel_Items(self, parent):
+    # generated method, don't edit
+
+    parent.AddWindow(self.buttonOk, 1, border=10, flag=wx.ALL | wx.ALIGN_RIGHT)
+    parent.AddWindow(self.buttonCancel, 1, border=10, flag=wx.ALL | wx.ALIGN_RIGHT)
+
+  def _init_coll_flexGridSizerBody_Items(self, parent):
+    # generated method, don't edit
+
+    parent.AddWindow(self.staticTextExperiment, 0, border=5, flag=wx.ALIGN_CENTER_VERTICAL | wx.ALL)
+    parent.AddWindow(self.choiceExperiment, 0, border=5, flag=wx.ALL | wx.GROW)
+    parent.AddWindow(self.staticTextDomain, 0, border=5, flag=wx.ALIGN_CENTER_VERTICAL | wx.ALL)
+    parent.AddWindow(self.choiceDomain, 0, border=5, flag=wx.ALL | wx.GROW)
+    parent.AddWindow(self.staticTextDeact, 0, border=5, flag=wx.ALIGN_CENTER_VERTICAL | wx.ALL)
+    parent.AddWindow(self.choiceDeact, 0, border=5, flag=wx.ALL | wx.GROW)
+
+  def _init_coll_boxSizerFrame_Items(self, parent):
+    # generated method, don't edit
+
+    parent.AddWindow(self.panelClient, 1, border=40, flag=wx.GROW)
+    parent.AddWindow(self.panelBottom, 0, border=40, flag=wx.GROW)
+
+  def _init_sizers(self):
+    # generated method, don't edit
+    self.boxSizerFrame = wx.BoxSizer(orient=wx.VERTICAL)
+
+    self.boxSizerBottomPanel = wx.BoxSizer(orient=wx.HORIZONTAL)
+
+    self.flexGridSizerBody = wx.FlexGridSizer(cols=2, hgap=5, rows=2, vgap=5)
+
+    self._init_coll_boxSizerFrame_Items(self.boxSizerFrame)
+    self._init_coll_boxSizerBottomPanel_Items(self.boxSizerBottomPanel)
+    self._init_coll_flexGridSizerBody_Growables(self.flexGridSizerBody)
+    self._init_coll_flexGridSizerBody_Items(self.flexGridSizerBody)
+
+    self.SetSizer(self.boxSizerFrame)
+    self.panelClient.SetSizer(self.flexGridSizerBody)
+    self.panelBottom.SetSizer(self.boxSizerBottomPanel)
+
+  def _init_ctrls(self, prnt):
+    # generated method, don't edit
+    wx.Dialog.__init__(self, id=wxID_DIALOGSELX, name='DialogSelX', parent=prnt, pos=wx.Point(416, 378), size=wx.Size(432, 182),
+      style=wx.DEFAULT_DIALOG_STYLE, title='Select Experiment')
+    self.SetClientSize(wx.Size(424, 155))
+    self.SetToolTipString(u'DialogSelX')
+    self.Center(wx.BOTH)
+
+    self.panelBottom = wx.Panel(id=wxID_DIALOGSELXPANELBOTTOM, name='panelBottom', parent=self, pos=wx.Point(0, 112), size=wx.Size(424, 43),
+      style=wx.TAB_TRAVERSAL)
+
+    self.buttonOk = wx.Button(id=wxID_DIALOGSELXBUTTONOK, label='&Ok', name='buttonOk', parent=self.panelBottom, pos=wx.Point(10, 10),
+      size=wx.Size(192, 23), style=0)
+    self.buttonOk.SetDefault()
+    self.buttonOk.Bind(wx.EVT_BUTTON, self.OnButtonOkButton, id=wxID_DIALOGSELXBUTTONOK)
+
+    self.buttonCancel = wx.Button(id=wxID_DIALOGSELXBUTTONCANCEL, label='&Cancel', name='buttonCancel', parent=self.panelBottom, pos=wx.Point(222,
+      10), size=wx.Size(192, 23), style=0)
+    self.buttonCancel.Bind(wx.EVT_BUTTON, self.OnButtonCancelButton, id=wxID_DIALOGSELXBUTTONCANCEL)
+
+    self.panelClient = wx.Panel(id=wxID_DIALOGSELXPANELCLIENT, name='panelClient', parent=self, pos=wx.Point(0, 0), size=wx.Size(424, 112),
+      style=wx.TAB_TRAVERSAL)
+
+    self.staticTextExperiment = wx.StaticText(id=wxID_DIALOGSELXSTATICTEXTEXPERIMENT, label='Experiment', name='staticTextExperiment',
+      parent=self.panelClient, pos=wx.Point(5, 9), size=wx.Size(55, 13), style=0)
+
+    self.choiceExperiment = wx.Choice(choices=[], id=wxID_DIALOGSELXCHOICEEXPERIMENT, name='choiceExperiment', parent=self.panelClient,
+      pos=wx.Point(108, 5), size=wx.Size(311, 21), style=0)
+    self.choiceExperiment.Bind(wx.EVT_CHOICE, self.OnChoiceExperimentChoice, id=wxID_DIALOGSELXCHOICEEXPERIMENT)
+
+    self.staticTextDomain = wx.StaticText(id=wxID_DIALOGSELXSTATICTEXTDOMAIN, label='Domain', name='staticTextDomain', parent=self.panelClient,
+      pos=wx.Point(5, 45), size=wx.Size(36, 13), style=0)
+
+    self.choiceDomain = wx.Choice(choices=[], id=wxID_DIALOGSELXCHOICEDOMAIN, name='choiceDomain', parent=self.panelClient, pos=wx.Point(108, 41),
+      size=wx.Size(311, 21), style=0)
+
+    self.staticTextDeact = wx.StaticText(id=wxID_DIALOGSELXSTATICTEXTDEACT, label='Activation scheme', name='staticTextDeact',
+      parent=self.panelClient, pos=wx.Point(5, 85), size=wx.Size(88, 13), style=0)
+
+    self.choiceDeact = wx.Choice(choices=[], id=wxID_DIALOGSELXCHOICEDEACT, name='choiceDeact', parent=self.panelClient, pos=wx.Point(108, 77),
+      size=wx.Size(311, 21), style=0)
+
+    self._init_sizers()
+
+  def __init__(self, parent):
+    self._init_ctrls(parent)
+    self.init_choices()
+
+
+  def get_idexperiment(self):
+    index = self.choiceExperiment.GetSelection()
+    return (index <> wx.NOT_FOUND) and self.data[index][0] or None
+  def get_iddomain(self):
+    index = self.choiceDomain.GetSelection()
+    return (index <> wx.NOT_FOUND) and self.data_domain[index][0] or None
+  def get_iddeact(self):
+    index = self.choiceDeact.GetSelection()
+    return (index <> wx.NOT_FOUND) and self.data_deact[index][0] or None
+
+
+  def select_experiment_by_id(self, id):
+    i = 0
+    for row in self.data:
+      if row[0] == id:
+        self.choiceExperiment.SetSelection(i)
+        break
+      i += 1
+
+  def select_domain_by_id(self, id):
+    i = 0
+    for row in self.data_domain:
+      if row[0] == id:
+        self.choiceDomain.SetSelection(i)
+        break
+      i += 1
+
+  def select_deact_by_id(self, id):
+    i = 0
+    for row in self.data_deact:
+      if row[0] == id:
+        self.choiceDeact.SetSelection(i)
+        break
+      i += 1
+
+
+  def try_default_experiment(self):
+    idexperiment_try = session.idexperiment > 0 and session.idexperiment or t_setup.get_value("def_idexperiment")
+    print "so, whaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaat %d" % idexperiment_try
+    if idexperiment_try > 0:
+      self.select_experiment_by_id(idexperiment_try)
+
+  def try_default_domain(self):
+    idexperiment = self.get_idexperiment()
+    if idexperiment > 0:
+      iddomain_try = session.iddomain > 0 and session.iddomain or t_setup.get_value("def_iddomain")
+      
+      if iddomain_try > 0:
+        self.select_domain_by_id(iddomain_try)
+
+  def try_default_deact(self):
+    idexperiment = self.get_idexperiment()
+    if idexperiment > 0:
+      iddeact_try = session.iddeact > 0 and session.iddeact or t_setup.get_value("def_iddeact")
+      
+      if iddeact_try > 0:
+        self.select_deact_by_id(iddeact_try)
+      
+
+  def populate_choice_experiment(self):
+    self.choiceExperiment.Clear()
+
+    # Reads experiment table
+    self.data = t_spectrum.get_cursor_data(field_names=("experiment.id", "experiment.name", "count(*) as no_spectra"), 
+    joins=[('experiment', 'experiment.id = spectrum.idexperiment')], groupbys=['experiment.id']).fetchall()
+    for (id, name, count) in self.data:
+      self.choiceExperiment.Append('%s (%s spectra)' % (name, count))
+
+
+  def populate_choice_domain(self):
+    self.choiceDomain.Clear()
+
+    idexperiment = self.get_idexperiment()
+    if idexperiment > 0:
+      self.data_domain = t_domain.get_cursor(idexperiment=idexperiment, field_names=("id", "name", "wncount")).fetchall()
+
+      for (iddomain, name, wncount) in self.data_domain:
+        no_series = t_series.get_count_1experiment(idexperiment, iddomain)
+        self.choiceDomain.Append("%s (%s features) (%d series) (%d" % (name, wncount, no_series))
+    else:
+      self.data_domain = ()
+
+  def populate_choice_deact(self):
+    self.choiceDeact.Clear()
+    
+    self.data_deact = t_deact.get_all_data(("id", "name"))
+    idexperiment = self.get_idexperiment()
+    for (id, name) in self.data_deact:
+      no_spectra = t_deact_spectrum.get_count(idexperiment=idexperiment, iddeact=id, flag_inactive=1)
+      self.choiceDeact.Append("%s (%d inactive) " % (name, no_spectra))
+
+
+  def init_choices(self):
+    self.populate_choice_experiment()
+    
+    self.try_default_experiment()
+
+    self.populate_choice_domain()
+    self.populate_choice_deact()
+
+    self.try_default_domain()
+    self.try_default_deact()
+    
+
+    
+    # but deactivation schemes not
+    # Certeza mano    
+    # self.try_default_deact()
+
+  def confirm(self):
+        
+
+    index1 = self.choiceExperiment.GetSelection()
+    index2 = self.choiceDomain.GetSelection()
+    index3 = self.choiceDeact.GetSelection()
+    try:
+      idexperiment = self.get_idexperiment()
+      if not idexperiment:
+        raise error_x("Please select an experiment.")
+      
+      iddomain = self.get_iddomain()
+      if not iddomain:
+        raise error_x("Please select a domain.")
+      
+      iddeact = self.get_iddeact()
+      if not iddeact:
+        raise error_x("Please select an activation scheme.")
+        
+      session.idexperiment = self.get_idexperiment()
+      session.iddomain = self.get_iddomain()
+      session.iddeact = self.get_iddeact()
+
+            
+      t_setup.update({"def_idexperiment": self.get_idexperiment(), 
+                      "def_iddomain": self.get_iddomain(), 
+                      "def_iddeact": self.get_iddeact()
+                     })
+      self.Close()    
+    except error_x, e:
+      output(e.message, OUTPUT_ERROR, True)
+
+  def OnButtonOkButton(self, event):
+    self.confirm()
+
+
+  def OnButtonCancelButton(self, event):
+    self.Close()
+
+  def OnChoiceExperimentChoice(self, event):
+    "Fills choiceDomain with the domain names and the numer of existing spectra per domain for the choiceExperiment selected item"
+    
+    self.populate_choice_domain()
+    self.populate_choice_deact()

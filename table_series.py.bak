@@ -1,0 +1,110 @@
+from table import table
+from db_con import con
+from sql_mounter import *
+from output import *
+import numpy
+import misc
+class table_series (table):
+  def __init__(self):
+    self.table_name = "series"
+
+
+  def insert(self, idspectrum, idexperiment, value):
+    con.execute("insert into %s (idspectrum, idexperiment, value) values(%%s, %%s, %%s)" % self.table_name, (idspectrum, idexperiment, value))
+    
+  def delete_1spectrum(self, idspectrum):
+    con.execute("delete from %s where idspectrum = %s" % (self.table_name, idspectrum))
+    output("- deleted series from idspectrum = "+str(idspectrum))
+    
+
+  # Nobody uses but... what to do???
+  def get_cursor_1experiment(self, field_names, idexperiment, flag_active_only=False):
+    o = select_mounter(tables=("series",),
+                       fields=field_names,
+                       wheres=("series.idexperiment = %s" % (idexperiment,)),
+                       orderbys="series.idspectrum, series.id")
+    if flag_active_only:
+      o.add_join((("spectrum", "spectrum.id = series.idspectrum"),))
+      o.add_where("spectrum.flag_active = 1")
+    print "olhaiiiiiiiiiiiiiiiiiiiiiiiii"
+    print o.mount_select()
+    return con.execute(o.mount_select())   
+
+  def get_count_1experiment(self, idexperiment, iddomain):
+    return con.query_scalar("select count(*) from series where idexperiment = %s and iddomain = %s" % (idexperiment, iddomain))
+
+
+
+  def reset(self, idexperiment, iddomain, idspectrum, vector, flag_simulation = False):
+    flag_inserted = False
+
+    vector = misc.vector2str(vector)
+    
+    id_ = con.query_scalar("select id from series where idexperiment = %d and iddomain = %d and idspectrum = %d" % 
+    (idexperiment, iddomain, idspectrum))
+    
+    if id_:
+      if not flag_simulation:
+        con.execute("update series set vector = %s where id = %s", (vector, id_))
+    else:
+      if not flag_simulation:
+        con.execute("insert into series (idexperiment, iddomain, idspectrum, vector) values (%s, %s, %s, '%s')" % 
+        (idexperiment, iddomain, idspectrum, vector))
+        id_ = con.insert_id()
+      else:
+        id_ = 0
+
+      flag_inserted = True
+      output("+ Series inserted: (%s)" % id_)
+
+
+    return (flag_inserted, id_)
+
+  
+#  def get_cursor_1spectrum(self, field_names, idspectrum, iddomain):
+#    o = select_mounter(tables=self.table_name,
+#                       fields=field_names,
+#                       wheres=("idspectrum = %s" % (idspectrum,), "iddomain = %s" % (iddomain,)),
+#                       orderbys="id")
+#    return con.execute(o.mount_select())
+  
+#  def get_cursor_joined_spectrum_1experiment(self, field_names, idexperiment, flag_active_only=False):
+#    o = select_mounter(tables=("series",),
+#                       fields=field_names,
+#                       joins=(("spectrum", "spectrum.id = series.idspectrum"),), 
+#                       wheres=("series.idexperiment = %s" % (idexperiment,)),
+#                       orderbys="series.idspectrum, series.id")
+#    if flag_active_only:
+#      o.add_join((("spectrum", "spectrum.id = series.idspectrum"),))
+#      o.add_where("spectrum.flag_active = 1")
+#    return con.execute(o.mount_select())   
+  
+#  def get_curve_1spectrum(self, idspectrum, iddomain):
+#    data = con.query_scalar("select vector from series where iddomain = %s and idspectrum = %s" % (idspectrum, iddomain))
+#    if len(data) > 0:
+#      return numpy.array(eval(data[0][0]), numpy.float)
+#    else:
+#      return numpy.array([])
+    
+#  def get_cursor_joined_1experiment(self, field_names, idexperiment, flag_active_only=False):
+#    o = select_mounter(tables=("series",),
+#                       fields=field_names,
+#                       joins=(("spectrum", "spectrum.id = series.idspectrum"), 
+#                              ("colony", "colony.id = spectrum.idcolony"), 
+#                              ("slide", "slide.id = colony.idslide"), 
+#                              ("tray", "tray.id = slide.idtray")
+#                             ),
+#                       wheres=("tray.idexperiment = %s" % (idexperiment,)),
+#                       orderbys="series.idspectrum, series.id")
+#    if flag_active_only:
+#      o.add_where("spectrum.flag_active = 1")
+#    return con.execute(o.mount_select())   
+
+
+
+
+
+
+
+
+t_series = table_series()
